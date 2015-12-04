@@ -4,10 +4,10 @@
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <uses-permission android:name="android.permission.SET_DEBUG_APP"></uses-permission>
-
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SET_DEBUG_APP" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -18,24 +18,33 @@
 
 
     <application
-        android:name="geoimage.ret.geoimage.App"
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Geo Share"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".DisplayAll">
+        <activity android:name=".Main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".UploadImage"
+            android:configChanges="orientation|keyboardHidden|screenSize"></activity>
 
-        <activity android:name=".UploadImage"></activity>
+        <service
+            android:name=".GetLocationService"
+            android:exported="false" />
+        <service
+            android:name=".PhotoUpdates"
+            android:exported="false"></service>
 
-        <activity android:name=".GetLoc"></activity>
+        <receiver
+            android:name="receiver"
+            android:process=":remote"></receiver>
     </application>
 
 </manifest>

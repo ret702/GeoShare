@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="geoimage.ret.geoimage.DisplayAll">
+    tools:context=".Main">
     <item
         android:id="@+id/uploadimage"
-        android:title="@string/T_uploadimage"></item>
+        android:icon="@drawable/uploadicon"
+        android:title="@string/T_uploadimage"
+        app:showAsAction="always">
+
+    </item>
 </menu>
