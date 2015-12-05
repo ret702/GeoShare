@@ -61,20 +61,21 @@ public class PhotoUpdates extends IntentService {
         // get a Calendar object with current time
         Calendar cal = Calendar.getInstance();
         // add 30 seconds to the calendar object
-        cal.setTimeInMillis(System.currentTimeMillis());
+        cal.setTimeInMillis(System.currentTimeMillis() + 120000);
 
         //registering our pending intent with alarmmanager
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        alarmManager.setInexactRepeating(AlarmManager.RTC, cal.getTimeInMillis() + 120000, 120000
+        alarmManager.cancel(sendIntent(this));
+        alarmManager.setInexactRepeating(AlarmManager.RTC, cal.getTimeInMillis(), 120000
                 , sendIntent(this));
+
 
 
     }
 
     private PendingIntent sendIntent(Context context) {
         Intent intent = new Intent(ACTION_PHOTOLISTENER);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         return pendingIntent;
     }
 

@@ -33,7 +33,8 @@
         </activity>
         <activity
             android:name=".UploadImage"
-            android:configChanges="orientation|keyboardHidden|screenSize"></activity>
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"></activity>
 
         <service
             android:name=".GetLocationService"

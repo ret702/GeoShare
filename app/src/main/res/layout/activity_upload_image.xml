@@ -4,14 +4,44 @@
     android:id="@+id/uploadimagelayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context="geoimage.ret.geoimage.UploadImage">
 
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:background="@drawable/uploadicon" />
+        android:id="@+id/imageView_preview"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_centerVertical="true" />
+
+    <LinearLayout
+        android:id="@+id/titlegroup"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:divider="@color/colorPrimary"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <EditText
+            android:id="@+id/editText_preview"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:layout_weight="1.75"
+            android:gravity="bottom"
+            android:maxLength="50"
+            android:textColor="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/button_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight=".25"
+            android:background="@color/colorAccent"
+            android:text="Submit"
+            android:textColor="@color/colorPrimary" />
+    </LinearLayout>
+
+
 </RelativeLayout>

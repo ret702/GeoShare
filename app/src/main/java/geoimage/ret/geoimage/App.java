@@ -14,6 +14,7 @@ public class App extends Application {
     static private Double latitude;
     static private Double longitude;
     static private List<ParseObject> imageIDs;
+    static private boolean isCameraStarted;
 
     static public Double getLat() {
 
@@ -38,6 +39,15 @@ public class App extends Application {
 
     static public void setImageIDs(List<ParseObject> ids) {
         imageIDs = ids;
+    }
+
+    static public Boolean getIsCameraStarted() {
+        return isCameraStarted;
+    }
+
+    static public void setIsCameraStarted(Boolean isStarted) {
+
+        isCameraStarted = isStarted;
     }
 
     @Override

@@ -23,20 +23,18 @@
                 android:id="@+id/userphoto"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
-
                 />
 
             <TextView
                 android:id="@+id/imagetitle"
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/userphoto"
                 android:background="@color/colorPrimary"
                 android:clickable="true"
                 android:focusable="true"
-                android:gravity="center"
                 android:textColor="@color/colorAccent"
                 android:textSize="24sp" />
 

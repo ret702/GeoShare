@@ -46,7 +46,7 @@ public class Main extends AppCompatActivity {
                 displayImages();
             } else if (intent.getAction() == "photolistener") {
                 makeSnack("Updating photos.");
-                GetLocationService.startGetLocation(getApplicationContext());
+                startLocService();
                 //TODO:Fetch/Warmup new images
             }
 
@@ -66,7 +66,6 @@ public class Main extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.mipmap.ic_launcher);
 
-
     }
 
     @TargetApi(23)
@@ -79,7 +78,7 @@ public class Main extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 10);
             }
         } else {
-            GetLocationService.startGetLocation(this);
+            startLocService();
         }
 
 
@@ -102,10 +101,15 @@ public class Main extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    GetLocationService.startGetLocation(this);
+                    startLocService();
                 }
             }
         }
+    }
+
+
+    public void startLocService() {
+        GetLocationService.startGetLocation(this);
     }
 
     @Override
@@ -134,16 +138,13 @@ public class Main extends AppCompatActivity {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (objects.size() > 0) {
                     if (e == null) {
-                        imageAdapter = new ImageAdapter(getApplicationContext(), objects);
+                        imageAdapter = new ImageAdapter(objects);
                         // Calling the RecyclerView
                         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
                         mRecyclerView.setHasFixedSize(true);
-
                         // The number of Columns
                         mLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
-
                         mRecyclerView.setLayoutManager(mLayoutManager);
-
                         mRecyclerView.setAdapter(imageAdapter);
 
                     } else {
@@ -199,11 +200,9 @@ public class Main extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT == 23) {
             requestPermission();
         } else {
-            GetLocationService.startGetLocation(this);
+            startLocService();
 
         }
-
     }
-
 
 }

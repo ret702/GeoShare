@@ -65,7 +65,9 @@ public class GetLocationService extends IntentService implements GoogleApiClient
      */
     private void handleLocation() {
         // TODO: Handle action Baz
-        buildGoogleApiClient();
+        if (mGoogleApiClient == null) {
+            buildGoogleApiClient();
+        }
         mGoogleApiClient.connect();
 
     }
@@ -109,7 +111,7 @@ public class GetLocationService extends IntentService implements GoogleApiClient
 
         App.setLat(location.getLatitude());
         App.setLon(location.getLongitude());
-
+        mGoogleApiClient.disconnect();
         sendBroadcast("LocationObtained");
 
 

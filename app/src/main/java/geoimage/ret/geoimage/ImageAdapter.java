@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.parse.ParseObject;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
     ArrayList<ParseObject> urls;
     Context context;
 
-    public ImageAdapter(Context context, List<ParseObject> URLS) {
+    public ImageAdapter(List<ParseObject> URLS) {
         this.titles = titles;
         this.context = context;
         // Ensure we get a different ordering of images on each run.
@@ -42,13 +42,15 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        Picasso.with(context) //
+        Glide.with(holder.photoImageView.getContext()) //
                 .load(urls.get(position).getParseFile("image").getUrl())
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
-                .tag("test")
-                .fit()
+                .centerCrop()
                 .into(holder.photoImageView);
+        if (urls.get(position).get("title") != null) {
+            holder.titleTextView.setText(urls.get(position).get("title").toString());
+        }
     }
 
     @Override
@@ -61,12 +63,12 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
 
     {
         public ImageView photoImageView;
-        public TextView textImageView;
+        public TextView titleTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             photoImageView = (ImageView) itemView.findViewById(R.id.userphoto);
-            textImageView = (TextView) itemView.findViewById(R.id.imagetitle);
+            titleTextView = (TextView) itemView.findViewById(R.id.imagetitle);
         }
     }
 
