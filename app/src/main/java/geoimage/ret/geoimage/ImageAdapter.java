@@ -64,7 +64,7 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
     {
         public ImageView photoImageView;
         public TextView titleTextView;
-
+        /
         public ViewHolder(View itemView) {
             super(itemView);
             photoImageView = (ImageView) itemView.findViewById(R.id.userphoto);
