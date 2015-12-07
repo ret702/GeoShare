@@ -7,7 +7,7 @@
         android:id="@+id/uploadimage"
         android:icon="@drawable/uploadicon"
         android:title="@string/T_uploadimage"
-        app:showAsAction="always">
+        app:showAsAction="always"></item>
 
-    </item>
+
 </menu>

@@ -14,7 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -36,7 +36,25 @@ public class Main extends AppCompatActivity {
     Toolbar toolbar;
     ImageAdapter imageAdapter;
     RecyclerView mRecyclerView;
-    RecyclerView.LayoutManager mLayoutManager;
+    android.support.v7.widget.LinearLayoutManager linearLayoutManager;
+    List<ParseObject> subListForScrolling;
+    int curSize;
+    int start = 0;
+    int end = 3;
+    List<ParseObject> picList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_display_all);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbarlayout object
+        setSupportActionBar(toolbar);
+        toolbar.setLogo(R.mipmap.ic_launcher);
+
+    }
+
+
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -57,16 +75,6 @@ public class Main extends AppCompatActivity {
         Snackbar.make(rootview, text, Snackbar.LENGTH_LONG).show();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_all);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbarlayout object
-        setSupportActionBar(toolbar);
-        toolbar.setLogo(R.mipmap.ic_launcher);
-
-    }
 
     @TargetApi(23)
     public void requestPermission() {
@@ -119,6 +127,7 @@ public class Main extends AppCompatActivity {
         if (requestCode == UploadImage.UploadImageRequestCode) {
             if (resultCode == Activity.RESULT_OK) {
                 makeSnack("Uploading Photo...");
+                //TODO: add seperate function to grab object IDs not already in the adapter
             }
         }
 
@@ -138,25 +147,48 @@ public class Main extends AppCompatActivity {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (objects.size() > 0) {
                     if (e == null) {
-                        imageAdapter = new ImageAdapter(objects);
-                        // Calling the RecyclerView
-                        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-                        mRecyclerView.setHasFixedSize(true);
-                        // The number of Columns
-                        mLayoutManager = new GridLayoutManager(getApplicationContext(), 1);
-                        mRecyclerView.setLayoutManager(mLayoutManager);
-                        mRecyclerView.setAdapter(imageAdapter);
-
+                        if (!objects.isEmpty()) {
+                            setupAdapter(objects);
+                        }
                     } else {
                         e.printStackTrace();
                         Log.v("error", e.getMessage());
                     }
                 } else {
+                    //TODO:// if not images, reregister loclistener
                     Toast.makeText(getApplicationContext(), "No Images To Display!", Toast.LENGTH_LONG);
                 }
             }
         });
     }
+
+    //params:start index , end index
+    public void setupAdapter(final List<ParseObject> pics) {
+        subListForScrolling = pics.subList(start, end);
+        imageAdapter = new ImageAdapter(this, subListForScrolling);
+        // Calling the RecyclerView
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        // The number of Columns
+        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setAdapter(imageAdapter);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == subListForScrolling.size() - 1) {
+                    curSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
+                    end = end + 3;
+                    imageAdapter.addItem(pics.subList(end, pics.size() - 1));
+
+                }
+
+            }
+
+        });
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -170,6 +202,8 @@ public class Main extends AppCompatActivity {
         if (item.getItemId() == R.id.uploadimage) {
             startActivityForResult(new Intent(this, UploadImage.class), UploadImage.UploadImageRequestCode);
         }
+
+
         return true;
     }
 

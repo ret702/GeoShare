@@ -150,7 +150,7 @@ public class UploadImage extends AppCompatActivity {
 
     public void saveImage(final String filename, byte[] image) {
         if (receivedLocaiton) {
-            final ParseFile parseFile = new ParseFile(filename.concat(".jpeg"), image);
+            final ParseFile parseFile = new ParseFile(filename.concat(".png"), image);
             parseFile.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -195,7 +195,7 @@ public class UploadImage extends AppCompatActivity {
             Bitmap bitmap = shrinkmethod(fileUri.getPath(), (int) px, (int) px);
             // Compress image to lower quality scale 1 - 100
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             final byte[] image = stream.toByteArray();
             stream.close();
             ImageView preview = (ImageView) findViewById(R.id.imageView_preview);
@@ -207,12 +207,13 @@ public class UploadImage extends AppCompatActivity {
                     .into(preview);
 
             findViewById(R.id.button_subtitle).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EditText title = (EditText) findViewById(R.id.editText_preview);
-                    saveImage(title.getText().toString(), image);
-                }
-            });
+                                                                      @Override
+                                                                      public void onClick(View v) {
+                                                                          EditText title = (EditText) findViewById(R.id.editText_preview);
+                                                                          saveImage(title.getText().toString(), image);
+                                                                      }
+                                                                  }
+            );
 
 
         } catch (Exception e) {
@@ -245,7 +246,7 @@ public class UploadImage extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         final File mediaFile;
 
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + timeStamp + ".jpg");
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + timeStamp + ".png");
         // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 

@@ -20,7 +20,7 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
     ArrayList<ParseObject> urls;
     Context context;
 
-    public ImageAdapter(List<ParseObject> URLS) {
+    public ImageAdapter(Context context,List<ParseObject> URLS) {
         this.titles = titles;
         this.context = context;
         // Ensure we get a different ordering of images on each run.
@@ -32,7 +32,7 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
+        View v = LayoutInflater.from(context)
                 .inflate(R.layout.mycardview, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(v);
@@ -42,35 +42,49 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        Glide.with(holder.photoImageView.getContext()) //
+        Glide.with(context) //
                 .load(urls.get(position).getParseFile("image").getUrl())
                 .placeholder(R.mipmap.ic_launcher)
                 .error(R.mipmap.ic_launcher)
                 .centerCrop()
                 .into(holder.photoImageView);
-        if (urls.get(position).get("title") != null) {
-            holder.titleTextView.setText(urls.get(position).get("title").toString());
-        }
+        holder.titleTextView.setText("");
+
     }
 
     @Override
     public int getItemCount() {
-
         return urls.size();
     }
+
+
+    public void addItem(List<ParseObject> items) {
+        int lastKnownSize=urls.size();
+        for(ParseObject item :items )
+        {
+            urls.add(item);
+        }
+
+      notifyItemRangeInserted(lastKnownSize, items.size());
+   //     notifyItemInserted(urls.size()-1);
+
+    }
+
+
 
     class ViewHolder extends RecyclerView.ViewHolder
 
     {
         public ImageView photoImageView;
         public TextView titleTextView;
-        /
+
         public ViewHolder(View itemView) {
             super(itemView);
             photoImageView = (ImageView) itemView.findViewById(R.id.userphoto);
             titleTextView = (TextView) itemView.findViewById(R.id.imagetitle);
         }
     }
+
 
 
 }
