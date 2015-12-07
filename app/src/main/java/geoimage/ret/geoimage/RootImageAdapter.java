@@ -38,6 +38,7 @@ class RootImageAdapter extends RecyclerView.Adapter<RootImageAdapter.RootViewHol
     @Override
     public RootViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = inflater.inflate(R.layout.root_row, viewGroup, false);
+
         RootViewHolder rvi = new RootViewHolder(view);
         return rvi;
     }
@@ -50,20 +51,7 @@ class RootImageAdapter extends RecyclerView.Adapter<RootImageAdapter.RootViewHol
          layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
         rootViewHolder.recyclerViewChild.setLayoutManager(layoutManager);
         rootViewHolder.recyclerViewChild.setAdapter(new ChildAdapter(inflater, urls));
-        rootViewHolder.recyclerViewChild.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (layoutManager.findLastCompletelyVisibleItemPosition() == urls.size() - 1) {
-                    curSize = layoutManager.findLastCompletelyVisibleItemPosition() + 1;
-                    end = end + 3;
-                 //   addItem(sublist.subList(end, urls.size() - 1));
 
-                }
-
-            }
-
-        });
     }
 
 
@@ -77,6 +65,13 @@ class RootImageAdapter extends RecyclerView.Adapter<RootImageAdapter.RootViewHol
         notifyItemRangeInserted(lastKnownSize, items.size());
         //     notifyItemInserted(urls.size()-1);
 
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+
+        return super.getItemViewType(position);
     }
 
     @Override

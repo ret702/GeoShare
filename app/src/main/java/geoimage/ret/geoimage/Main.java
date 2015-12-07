@@ -36,13 +36,13 @@ public class Main extends AppCompatActivity {
     Toolbar toolbar;
     ImageAdapter imageAdapter;
     RecyclerView mRecyclerView;
-    android.support.v7.widget.LinearLayoutManager linearLayoutManager;
     List<ParseObject> subListForScrolling;
     List<ParseObject> picList;
     RecyclerView recyclerView;
     RecyclerView recyclerView2;
     int start = 0;
     int end = 3;
+    LinearLayoutManager linearLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +143,7 @@ public class Main extends AppCompatActivity {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Images");
         query.whereWithinKilometers("location", parseGeoPoint, 100);
         query.orderByDescending("createdAt");
+
         query.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
@@ -166,13 +167,39 @@ public class Main extends AppCompatActivity {
 
     //params:start index , end index
     public void setupAdapter(final List<ParseObject> pics) {
+
         RootImageAdapter adapter;
+         linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RootImageAdapter(this, pics, linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            //todo: add rows
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+//                if (linearLayoutManager.findFirstCompletelyVisibleItemPosition()==/*user pic collection size- whole size*/ urls.size() - 1) {
+//                    curSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
+//                    end = end + 3;
+//                    //   addItem(sublist.subList(end, urls.size() - 1));
+//
+//                }
+
+            }
+
+        });
 
     }
+//
+//    public void FillAdapter( List<ParseObject> pics)
+//    {
+//        for(ParseObject parseObject:pics)
+//        {
+//            parseObject.
+//        }
+//
+//    }
 
 
     @Override

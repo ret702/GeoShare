@@ -24,13 +24,13 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
@@ -44,6 +44,7 @@ public class UploadImage extends AppCompatActivity {
     static int UploadImageRequestCode = 11;
     Uri fileUri;
     boolean receivedLocaiton = false;
+    View rootview;
     // ...
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -77,15 +78,13 @@ public class UploadImage extends AppCompatActivity {
             //activity causing an infinite loop
             if (App.getIsCameraStarted() != true) {
                 startCameraIntent();
-            } else {
-                startLocService();
             }
         }
     }
 
     public void makeSnack(String text) {
-        RelativeLayout relativelayout = (RelativeLayout) findViewById(R.id.uploadimagelayout);
-        Snackbar.make(relativelayout, text, Snackbar.LENGTH_LONG);
+
+        Snackbar.make(rootview, text, Snackbar.LENGTH_LONG);
     }
 
 
@@ -114,6 +113,7 @@ public class UploadImage extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             receieveCameraIntent();
+            startLocService();
 
         } else if (resultCode == RESULT_CANCELED) {
             // User cancelled the image capture
@@ -161,30 +161,34 @@ public class UploadImage extends AppCompatActivity {
             });
 
             App.setIsCameraStarted(false);
-            setResult(Activity.RESULT_OK);
-            finish();
+
         } else {
-            makeSnack("Location Failed, Please Try Later.");
+            makeSnack("Obtaining Location Please Wait.");
             startLocService();
+
         }
     }
 
     public void saveObject(ParseFile parsefile, String title) {
         ParseObject parseObject = new ParseObject("Images");
-
+        ParseUser creator =ParseUser.getCurrentUser();
         parseObject.put("location", new ParseGeoPoint(App.getLat(), App.getLon()));
         parseObject.put("image", parsefile);
         parseObject.put("title", title);
+       parseObject.put("createdBy", creator);
         parseObject.saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
                     Main.makeSnack("Upload Complete");
                 } else {
-
+         e.printStackTrace();
                 }
             }
         });
+
+        setResult(Activity.RESULT_OK);
+        finish();
     }
 
     public void receieveCameraIntent() {
@@ -277,12 +281,11 @@ public class UploadImage extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("location"));
-
+        rootview = findViewById(R.id.uploadimagelayout);
         if (android.os.Build.VERSION.SDK_INT == 23) {
             requestPermission();
         } else if (App.getIsCameraStarted() != true) {
             startCameraIntent();
-            startLocService();
         }
 
     }

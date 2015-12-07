@@ -54,6 +54,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Parse.enableLocalDatastore(this);
         Parse.initialize(this, "k9Jby5AwGmxHwr5seb9uF2JfU8WxWkbxk6ttGgVY", "RS5absrPZljMeuKueyCEZREBgfl56d0QerUVPakJ");
 
     }
