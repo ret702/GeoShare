@@ -38,10 +38,11 @@ public class Main extends AppCompatActivity {
     RecyclerView mRecyclerView;
     android.support.v7.widget.LinearLayoutManager linearLayoutManager;
     List<ParseObject> subListForScrolling;
-    int curSize;
+    List<ParseObject> picList;
+    RecyclerView recyclerView;
+    RecyclerView recyclerView2;
     int start = 0;
     int end = 3;
-    List<ParseObject> picList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,7 @@ public class Main extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbarlayout object
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.mipmap.ic_launcher);
+
 
     }
 
@@ -164,29 +166,12 @@ public class Main extends AppCompatActivity {
 
     //params:start index , end index
     public void setupAdapter(final List<ParseObject> pics) {
-        subListForScrolling = pics.subList(start, end);
-        imageAdapter = new ImageAdapter(this, subListForScrolling);
-        // Calling the RecyclerView
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        // The number of Columns
-        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRecyclerView.setLayoutManager(linearLayoutManager);
-        mRecyclerView.setAdapter(imageAdapter);
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                if (linearLayoutManager.findLastCompletelyVisibleItemPosition() == subListForScrolling.size() - 1) {
-                    curSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
-                    end = end + 3;
-                    imageAdapter.addItem(pics.subList(end, pics.size() - 1));
+        RootImageAdapter adapter;
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new RootImageAdapter(this, pics, linearLayoutManager);
+        recyclerView.setAdapter(adapter);
 
-                }
-
-            }
-
-        });
     }
 
 

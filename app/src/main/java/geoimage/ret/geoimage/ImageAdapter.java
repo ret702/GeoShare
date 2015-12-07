@@ -20,12 +20,14 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
     ArrayList<ParseObject> urls;
     Context context;
 
+
     public ImageAdapter(Context context,List<ParseObject> URLS) {
         this.titles = titles;
         this.context = context;
         // Ensure we get a different ordering of images on each run.
         urls = new ArrayList<ParseObject>();
-        this.urls.addAll(URLS);
+
+        this.urls.addAll(URLS.subList(0,3));
 
     }
 
