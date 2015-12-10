@@ -15,14 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter<ImageAdapter.ViewHolder> {
-    int layoutID;
-    ArrayList<String> titles;
     ArrayList<ParseObject> urls;
     Context context;
 
 
     public ImageAdapter(Context context,List<ParseObject> URLS) {
-        this.titles = titles;
         this.context = context;
         // Ensure we get a different ordering of images on each run.
         urls = new ArrayList<ParseObject>();
@@ -37,8 +34,7 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
         View v = LayoutInflater.from(context)
                 .inflate(R.layout.mycardview, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(v);
-        return viewHolder;
+        return new ViewHolder(v);
     }
 
     @Override
@@ -83,7 +79,6 @@ public class ImageAdapter extends android.support.v7.widget.RecyclerView.Adapter
         public ViewHolder(View itemView) {
             super(itemView);
             photoImageView = (ImageView) itemView.findViewById(R.id.userphoto);
-            titleTextView = (TextView) itemView.findViewById(R.id.imagetitle);
         }
     }
 

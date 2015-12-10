@@ -24,9 +24,9 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         rootview = findViewById(R.id.loginlayout);
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
+
         //sign up
-        if (currentUser.getCurrentUser() == null) {
+        if (ParseUser.getCurrentUser() == null) {
 
             Button button = (Button) findViewById(R.id.button_submituserpass);
             button.setOnClickListener(new View.OnClickListener() {
@@ -39,7 +39,7 @@ public class Login extends AppCompatActivity {
                             if (user != null) {
                                 navigateToActivity();
                             } else {
-                                makeSnack("No Login.Create New?");
+                                makeSnack();
                             }
                         }
                     });
@@ -51,8 +51,8 @@ public class Login extends AppCompatActivity {
 
     }
 
-    void makeSnack(String text) {
-        Snackbar.make(rootview, text, Snackbar.LENGTH_INDEFINITE).setAction("Yes", new View.OnClickListener() {
+    void makeSnack() {
+        Snackbar.make(rootview, "No Login.Create New?", Snackbar.LENGTH_INDEFINITE).setAction("Yes", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ParseUser user = new ParseUser();

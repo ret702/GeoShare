@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="geoimage.ret.geoimage.displaySingleImage"
+    android:id="@+id/layout_displaySingleImage"
+    android:transitionName="tNameHolder"
+    >
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:transitionName="tImage"
+        android:id="@+id/imageView_displayFullImage"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:background="#000000" />
+</LinearLayout>

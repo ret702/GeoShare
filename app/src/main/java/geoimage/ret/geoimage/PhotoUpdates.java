@@ -75,8 +75,7 @@ public class PhotoUpdates extends IntentService {
 
     private PendingIntent sendIntent(Context context) {
         Intent intent = new Intent(ACTION_PHOTOLISTENER);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        return pendingIntent;
+        return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 }

@@ -46,6 +46,8 @@ public class Main extends AppCompatActivity {
     int rowSize;
     //sublist of all users , default display first 3, will be used for pagination also.
     ArrayList<ArrayList<ParseObject>> sublist;
+    RootImageAdapter adapter;
+    private boolean reachedEndOfLast = false;
 
 
     @Override
@@ -75,13 +77,13 @@ public class Main extends AppCompatActivity {
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction() == "location") {
+            if (intent.getAction().equals("location")) {
                 makeSnack("Location Obtained!");
                 PhotoUpdates.startPhotoListener(getApplicationContext());
                 displayImages();
-            } else if (intent.getAction() == "photolistener") {
+            } else if (intent.getAction().equals("photolistener")) {
                 makeSnack("Updating photos.");
-                startLocService();
+
                 //TODO:Fetch/Warmup new images
             }
 
@@ -168,11 +170,10 @@ public class Main extends AppCompatActivity {
                         if (!objects.isEmpty()) {
                             setupAdapter((ArrayList) (objects));
                         }
-                    }else if (e.getCode()== ParseException.REQUEST_LIMIT_EXCEEDED) {
+                    } else if (e.getCode() == ParseException.REQUEST_LIMIT_EXCEEDED) {
                         makeSnack("Error! Reloading images.");
                         displayImages(); // How many times you do this is your business...
-                    }
-                    else {
+                    } else {
                         e.printStackTrace();
                         Log.v("error", e.getMessage());
                     }
@@ -186,8 +187,7 @@ public class Main extends AppCompatActivity {
 
 
     public void setupAdapter(ArrayList<ParseObject> pics) {
-        //setup vars
-        RootImageAdapter adapter;
+        //create field so I don't have to pass around objects all the time
         picsField = pics;
         //get all user collections
         urlHashMap = FillAdapter();
@@ -201,23 +201,45 @@ public class Main extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RootImageAdapter(this, sublist, linearLayoutManager);
         recyclerView.setAdapter(adapter);
+
+
+
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             //todo: add rows
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == sublist.size() - 1) {
-                    rowSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
-
-                    //   addItem(keyList.subList(end, urls.size() - 1));
-
+                if (reachedEndOfLast != true) {
+                    if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == sublist.size() - 1) {
+                        rowSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
+                        adapter.addItem(getKeyRange());
+                    }
                 }
-
             }
-
         });
 
+
+        //  cacheImages();
+
     }
+
+
+//    public void cacheImages() {
+//        new Thread(new Runnable() {
+//            public void run() {
+//                for (int i = (start + 3); (i < keyList.size()); i++) {
+//                    ArrayList<ParseObject> userRow= new ArrayList<>(urlHashMap.get(keyList.get(i)));
+//                    for (int j = 0; j < userRow.size(); j++) {
+//                        Glide.with(getApplicationContext())
+//                                .load(userRow.get(j).getParseFile("image").getUrl())
+//                                .preload(350, 300);
+//                    }
+//                }
+//            }
+//        }).start();
+//    }
 
     /*
     A method to loop through all the user photos and obtain 1 hashmap row per user
@@ -226,7 +248,7 @@ public class Main extends AppCompatActivity {
 
     public LinkedHashMap<String, ArrayList<ParseObject>> FillAdapter() {
         LinkedHashMap<String, ArrayList<ParseObject>> hashMap = new LinkedHashMap<String, ArrayList<ParseObject>>();
-        ArrayList<ParseObject> arrayList = new ArrayList<>();
+        ArrayList<ParseObject> arrayList;
 
         for (ParseObject parseObject : picsField) {
             ParseUser createdBy = parseObject.getParseUser("createdBy");
@@ -238,7 +260,6 @@ public class Main extends AppCompatActivity {
                 hashMap.put(createdBy.getObjectId(), arrayList);
             }
         }
-
         return hashMap;
     }
 
@@ -249,22 +270,19 @@ public class Main extends AppCompatActivity {
     i.e used for pagination to obtain a specific amount of users.
      */
     public ArrayList<ArrayList<ParseObject>> getKeyRange() {
-
         ArrayList<ArrayList<ParseObject>> userObjectSublist = new ArrayList<>();
-        if ((end + 3) > keyList.size()) {
-            end = end + ((end + 3) % keyList.size());
-        } else {
-            end += 3;
+        if (reachedEndOfLast != true) {
+            if ((end + 3) > keyList.size()) {
+                end = end + (keyList.size() % end);
+                reachedEndOfLast = true;
+            } else {
+                end += 3;
+            }
+            for (int i = start; (i < keyList.size()) && (i < end); i++) {
+                userObjectSublist.add(urlHashMap.get(keyList.get(i)));
+            }
         }
-        for (int i = start; (i < keyList.size()) && (i < end); i++) {
-            userObjectSublist.add(urlHashMap.get(keyList.get(i)));
-        }
-
         start = end;
-
-
-        Log.v("end", Integer.toString(end));
-
 
         return userObjectSublist;
 
@@ -296,11 +314,6 @@ public class Main extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
 
     @Override
     protected void onResume() {

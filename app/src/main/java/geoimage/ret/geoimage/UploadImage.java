@@ -20,7 +20,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,6 +44,7 @@ public class UploadImage extends AppCompatActivity {
     Uri fileUri;
     boolean receivedLocaiton = false;
     View rootview;
+    byte[] f_image;
     // ...
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -82,9 +82,9 @@ public class UploadImage extends AppCompatActivity {
         }
     }
 
-    public void makeSnack(String text) {
+    public void makeSnack() {
 
-        Snackbar.make(rootview, text, Snackbar.LENGTH_LONG);
+        Snackbar.make(rootview, "Obtaining Location Please Wait.", Snackbar.LENGTH_LONG);
     }
 
 
@@ -123,28 +123,42 @@ public class UploadImage extends AppCompatActivity {
 
     }
 
-    Bitmap shrinkmethod(String file, int width, int height) {
-        BitmapFactory.Options bitopt = new BitmapFactory.Options();
-        bitopt.inJustDecodeBounds = true;
-        Bitmap bit = BitmapFactory.decodeFile(file, bitopt);
 
-        int h = (int) Math.ceil(bitopt.outHeight / (float) height);
-        int w = (int) Math.ceil(bitopt.outWidth / (float) width);
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
 
-        if (h > 1 || w > 1) {
-            if (h > w) {
-                bitopt.inSampleSize = h;
+        if (height > reqHeight || width > reqWidth) {
 
-            } else {
-                bitopt.inSampleSize = w;
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
             }
         }
-        bitopt.inJustDecodeBounds = false;
-        bit = BitmapFactory.decodeFile(file, bitopt);
 
+        return inSampleSize;
+    }
 
-        return bit;
+    public static Bitmap decodeSampledBitmapFromResource(String path,
+                                                         int reqWidth, int reqHeight) {
 
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(path, options);
     }
 
 
@@ -163,7 +177,7 @@ public class UploadImage extends AppCompatActivity {
             App.setIsCameraStarted(false);
 
         } else {
-            makeSnack("Obtaining Location Please Wait.");
+            makeSnack();
             startLocService();
 
         }
@@ -171,18 +185,18 @@ public class UploadImage extends AppCompatActivity {
 
     public void saveObject(ParseFile parsefile, String title) {
         ParseObject parseObject = new ParseObject("Images");
-        ParseUser creator =ParseUser.getCurrentUser();
+        ParseUser creator = ParseUser.getCurrentUser();
         parseObject.put("location", new ParseGeoPoint(App.getLat(), App.getLon()));
         parseObject.put("image", parsefile);
         parseObject.put("title", title);
-       parseObject.put("createdBy", creator);
+        parseObject.put("createdBy", creator);
         parseObject.saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
                     Main.makeSnack("Upload Complete");
                 } else {
-         e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
         });
@@ -193,37 +207,41 @@ public class UploadImage extends AppCompatActivity {
 
     public void receieveCameraIntent() {
 
-        try {
-            Resources r = getResources();
-            float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, r.getDisplayMetrics());
-            Bitmap bitmap = shrinkmethod(fileUri.getPath(), (int) px, (int) px);
-            // Compress image to lower quality scale 1 - 100
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
-            final byte[] image = stream.toByteArray();
-            stream.close();
-            ImageView preview = (ImageView) findViewById(R.id.imageView_preview);
-            Glide.with(this) //
-                    .load(image)
-                    .placeholder(R.mipmap.ic_launcher)
-                    .error(R.mipmap.ic_launcher)
-                    .centerCrop()
-                    .into(preview);
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Resources r = getResources();
+                    Bitmap bitmap = decodeSampledBitmapFromResource(fileUri.getPath(), 350, 300);
+                    // Compress image to lower quality scale 1 - 100
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+                    f_image = stream.toByteArray();
+                    stream.close();
+                    ImageView preview = (ImageView) findViewById(R.id.imageView_preview);
+                    Glide.with(getApplicationContext()) //
+                            .load(f_image)
+                            .placeholder(R.mipmap.ic_launcher)
+                            .error(R.mipmap.ic_launcher)
+                            .centerCrop()
+                            .into(preview);
+                } catch (Exception e) {
 
-            findViewById(R.id.button_subtitle).setOnClickListener(new View.OnClickListener() {
-                                                                      @Override
-                                                                      public void onClick(View v) {
-                                                                          EditText title = (EditText) findViewById(R.id.editText_preview);
-                                                                          saveImage(title.getText().toString(), image);
-                                                                      }
+                    //TODO://Catch Error6
+                }
+
+            }
+        }).start();
+
+        findViewById(R.id.button_subtitle).setOnClickListener(new View.OnClickListener() {
+                                                                  @Override
+                                                                  public void onClick(View v) {
+                                                                      EditText title = (EditText) findViewById(R.id.editText_preview);
+                                                                      saveImage(title.getText().toString(), f_image);
                                                                   }
-            );
+                                                              }
+        );
 
 
-        } catch (Exception e) {
-
-            //TODO://Catch Error6
-        }
     }
 
 
@@ -251,12 +269,12 @@ public class UploadImage extends AppCompatActivity {
         final File mediaFile;
 
         mediaFile = new File(mediaStorageDir.getPath() + File.separator + timeStamp + ".png");
-        // create Intent to take a picture and return control to the calling application
+//        // create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        fileUri = Uri.fromFile(mediaFile);// create a file to save the image
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
-
+//
+//        fileUri = Uri.fromFile(mediaFile);// create a file to save the image
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri); // set the image file name
+        intent.putExtra("return-data", true);
         // start the image capture Intent
         App.setIsCameraStarted(true);
         startActivityForResult(intent, CAMERA_REQUEST);
