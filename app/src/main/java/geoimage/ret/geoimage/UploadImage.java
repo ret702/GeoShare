@@ -199,7 +199,7 @@ public class UploadImage extends AppCompatActivity {
             Bitmap bitmap = shrinkmethod(fileUri.getPath(), (int) px, (int) px);
             // Compress image to lower quality scale 1 - 100
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
             final byte[] image = stream.toByteArray();
             stream.close();
             ImageView preview = (ImageView) findViewById(R.id.imageView_preview);

@@ -21,28 +21,32 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Main extends AppCompatActivity {
     static View rootview;
     Toolbar toolbar;
-    ImageAdapter imageAdapter;
-    RecyclerView mRecyclerView;
-    List<ParseObject> subListForScrolling;
-    List<ParseObject> picList;
     RecyclerView recyclerView;
-    RecyclerView recyclerView2;
     int start = 0;
-    int end = 3;
+    int end = 0;
+    LinkedHashMap<String, ArrayList<ParseObject>> urlHashMap;
     LinearLayoutManager linearLayoutManager;
+    ArrayList<ParseObject> picsField;
+    ArrayList<String> keyList;
+    int rowSize;
+    //sublist of all users , default display first 3, will be used for pagination also.
+    ArrayList<ArrayList<ParseObject>> sublist;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,17 @@ public class Main extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbarlayout object
         setSupportActionBar(toolbar);
         toolbar.setLogo(R.mipmap.ic_launcher);
+
+        //snack stuff
+        rootview = findViewById(R.id.displayalllayout);
+        makeSnack("Obtaining Location...");
+
+        if (android.os.Build.VERSION.SDK_INT == 23) {
+            requestPermission();
+        } else {
+            startLocService();
+
+        }
 
 
     }
@@ -151,55 +166,109 @@ public class Main extends AppCompatActivity {
                 if (objects.size() > 0) {
                     if (e == null) {
                         if (!objects.isEmpty()) {
-                            setupAdapter(objects);
+                            setupAdapter((ArrayList) (objects));
                         }
-                    } else {
+                    }else if (e.getCode()== ParseException.REQUEST_LIMIT_EXCEEDED) {
+                        makeSnack("Error! Reloading images.");
+                        displayImages(); // How many times you do this is your business...
+                    }
+                    else {
                         e.printStackTrace();
                         Log.v("error", e.getMessage());
                     }
                 } else {
                     //TODO:// if not images, reregister loclistener
-                    Toast.makeText(getApplicationContext(), "No Images To Display!", Toast.LENGTH_LONG);
+                    makeSnack("No images located near you.");
                 }
             }
         });
     }
 
-    //params:start index , end index
-    public void setupAdapter(final List<ParseObject> pics) {
 
+    public void setupAdapter(ArrayList<ParseObject> pics) {
+        //setup vars
         RootImageAdapter adapter;
-         linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false);
+        picsField = pics;
+        //get all user collections
+        urlHashMap = FillAdapter();
+        keyList = new ArrayList<>();
+        //get each user
+        keyList.addAll(urlHashMap.keySet());
+        sublist = getKeyRange();
+        //setup adapater
+        linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter = new RootImageAdapter(this, pics, linearLayoutManager);
+        adapter = new RootImageAdapter(this, sublist, linearLayoutManager);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             //todo: add rows
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-//                if (linearLayoutManager.findFirstCompletelyVisibleItemPosition()==/*user pic collection size- whole size*/ urls.size() - 1) {
-//                    curSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
-//                    end = end + 3;
-//                    //   addItem(sublist.subList(end, urls.size() - 1));
-//
-//                }
+                if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == sublist.size() - 1) {
+                    rowSize = linearLayoutManager.findLastCompletelyVisibleItemPosition() + 1;
+
+                    //   addItem(keyList.subList(end, urls.size() - 1));
+
+                }
 
             }
 
         });
 
     }
-//
-//    public void FillAdapter( List<ParseObject> pics)
-//    {
-//        for(ParseObject parseObject:pics)
-//        {
-//            parseObject.
-//        }
-//
-//    }
+
+    /*
+    A method to loop through all the user photos and obtain 1 hashmap row per user
+    which contains all the photos by that user.
+     */
+
+    public LinkedHashMap<String, ArrayList<ParseObject>> FillAdapter() {
+        LinkedHashMap<String, ArrayList<ParseObject>> hashMap = new LinkedHashMap<String, ArrayList<ParseObject>>();
+        ArrayList<ParseObject> arrayList = new ArrayList<>();
+
+        for (ParseObject parseObject : picsField) {
+            ParseUser createdBy = parseObject.getParseUser("createdBy");
+            if (hashMap.containsKey(createdBy.getObjectId())) {
+                hashMap.get(createdBy.getObjectId()).add(parseObject);
+            } else {
+                arrayList = new ArrayList<ParseObject>();
+                arrayList.add(parseObject);
+                hashMap.put(createdBy.getObjectId(), arrayList);
+            }
+        }
+
+        return hashMap;
+    }
+
+
+    /*
+    a function that uses the fillAdapaters keylist
+    and gets the hashmap row returned from filladapater corresponding to a user
+    i.e used for pagination to obtain a specific amount of users.
+     */
+    public ArrayList<ArrayList<ParseObject>> getKeyRange() {
+
+        ArrayList<ArrayList<ParseObject>> userObjectSublist = new ArrayList<>();
+        if ((end + 3) > keyList.size()) {
+            end = end + ((end + 3) % keyList.size());
+        } else {
+            end += 3;
+        }
+        for (int i = start; (i < keyList.size()) && (i < end); i++) {
+            userObjectSublist.add(urlHashMap.get(keyList.get(i)));
+        }
+
+        start = end;
+
+
+        Log.v("end", Integer.toString(end));
+
+
+        return userObjectSublist;
+
+    }
 
 
     @Override
@@ -239,16 +308,6 @@ public class Main extends AppCompatActivity {
         registerReceiver(receiver, new IntentFilter("photolistener"));
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter("location"));
 
-        //snack stuff
-        rootview = findViewById(R.id.displayalllayout);
-        makeSnack("Obtaining Location...");
-
-        if (android.os.Build.VERSION.SDK_INT == 23) {
-            requestPermission();
-        } else {
-            startLocService();
-
-        }
     }
 
 }
