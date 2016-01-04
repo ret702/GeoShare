@@ -5,15 +5,16 @@
     android:layout_height="match_parent"
     tools:context="geoimage.ret.geoimage.displaySingleImage"
     android:id="@+id/layout_displaySingleImage"
-    android:transitionName="tNameHolder"
     >
 
-    <ImageView
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerViewUsers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:transitionName="tImage"
-        android:id="@+id/imageView_displayFullImage"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:background="#000000" />
+        android:layout_below="@id/toolbar">
+
+    </android.support.v7.widget.RecyclerView>
+
+
 </LinearLayout>

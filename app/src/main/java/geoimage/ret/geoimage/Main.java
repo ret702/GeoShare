@@ -79,7 +79,9 @@ public class Main extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals("location")) {
                 makeSnack("Location Obtained!");
-                PhotoUpdates.startPhotoListener(getApplicationContext());
+                if (!PhotoUpdates.getStarted() == true) {
+                    PhotoUpdates.startPhotoListener(getApplicationContext());
+                }
                 displayImages();
             } else if (intent.getAction().equals("photolistener")) {
                 makeSnack("Updating photos.");
@@ -197,12 +199,10 @@ public class Main extends AppCompatActivity {
         sublist = getKeyRange();
         //setup adapater
         linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewParent);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter = new RootImageAdapter(this, sublist, linearLayoutManager);
         recyclerView.setAdapter(adapter);
-
-
 
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -234,7 +234,7 @@ public class Main extends AppCompatActivity {
 //                    for (int j = 0; j < userRow.size(); j++) {
 //                        Glide.with(getApplicationContext())
 //                                .load(userRow.get(j).getParseFile("image").getUrl())
-//                                .preload(350, 300);
+//                                .downloadOnly();
 //                    }
 //                }
 //            }
@@ -298,8 +298,10 @@ public class Main extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.uploadimage) {
+        if (item.getItemId() == R.id.icon_uploadimage) {
             startActivityForResult(new Intent(this, UploadImage.class), UploadImage.UploadImageRequestCode);
+        } else if (item.getItemId() == R.id.icon_users) {
+            startActivity(new Intent(this, displaySingleImage.class));
         }
 
 

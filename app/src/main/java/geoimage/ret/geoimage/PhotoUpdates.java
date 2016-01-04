@@ -20,7 +20,7 @@ public class PhotoUpdates extends IntentService {
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_PHOTOLISTENER = "photolistener";
     static private Context callingContext;
-
+   static boolean status;
 
     public PhotoUpdates() {
         super("PhotoUpdates");
@@ -38,7 +38,18 @@ public class PhotoUpdates extends IntentService {
         Intent intent = new Intent(context, PhotoUpdates.class);
         intent.setAction(ACTION_PHOTOLISTENER);
         context.startService(intent);
+
     }
+
+     public void setStarted(boolean started)
+    {
+       status=started;
+    }
+    static public boolean getStarted()
+    {
+        return status;
+    }
+
 
 
     @Override
@@ -47,10 +58,16 @@ public class PhotoUpdates extends IntentService {
             final String action = intent.getAction();
             if (ACTION_PHOTOLISTENER.equals(action)) {
                 handlePhotoListener();
+                setStarted(true);
             }
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        setStarted(false);
+    }
 
     /**
      * Handle action Foo in the provided background thread with the provided
@@ -68,10 +85,8 @@ public class PhotoUpdates extends IntentService {
         alarmManager.cancel(sendIntent(this));
         alarmManager.setInexactRepeating(AlarmManager.RTC, cal.getTimeInMillis(), 120000
                 , sendIntent(this));
-
-
-
     }
+
 
     private PendingIntent sendIntent(Context context) {
         Intent intent = new Intent(ACTION_PHOTOLISTENER);

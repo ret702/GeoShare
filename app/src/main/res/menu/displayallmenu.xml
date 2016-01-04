@@ -4,9 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".Main">
     <item
-        android:id="@+id/uploadimage"
+        android:id="@+id/icon_uploadimage"
         android:icon="@drawable/uploadicon"
-        android:title="@string/T_uploadimage"
+        android:title="@string/uploadimageicondefaultstring"
+        app:showAsAction="always"></item>
+
+    <item
+        android:id="@+id/icon_users"
+        android:icon="@drawable/usersicon"
+        android:title="@string/usericondefaultstring"
         app:showAsAction="always"></item>
 
 

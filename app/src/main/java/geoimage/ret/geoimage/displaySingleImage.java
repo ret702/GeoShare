@@ -1,5 +1,6 @@
 package geoimage.ret.geoimage;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -17,21 +18,35 @@ public class displaySingleImage extends AppCompatActivity {
         setContentView(R.layout.activity_display_single_image);
 
         Bundle bundle = getIntent().getExtras();
-      ImageView imageView=(ImageView) findViewById(R.id.imageView_displayFullImage);
-        Glide.with(this) //
-                .load(bundle.getString("url"))
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .centerCrop()
-                .into((ImageView) findViewById(R.id.imageView_displayFullImage));
+        ImageView imageView = (ImageView) findViewById(R.id.imageView_displayFullImage);
 
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        Uri uri = Uri.parse("android.resource://geoimage.ret.geoimage/drawable/onlinestatus.gif");
+        Glide.with(getApplicationContext()) //
+                .load(R.drawable.onlinestatus)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                        .error(R.mipmap.ic_launcher)
+                        .centerCrop()
+                        .into((ImageView) findViewById(R.id.imageView_userOnlineStatus));
+
+
+//        Glide.with(this) //
+//                .load(bundle.getString("url"))
+//                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+//                .placeholder(R.mipmap.ic_launcher)
+//                .error(R.mipmap.ic_launcher)
+//                .centerCrop()
+//                .into((ImageView) findViewById(R.id.imageView_displayFullImage));
+
+        imageView.setOnClickListener(new View.OnClickListener()
+
+                                     {
+                                         @Override
+                                         public void onClick(View v) {
+                                             finish();
+                                         }
+                                     }
+
+        );
 
     }
 }

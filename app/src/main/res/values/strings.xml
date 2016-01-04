@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Geo Share</string>
-    <string name="T_uploadimage">Upload Image</string>
+    <string name="uploadimageicondefaultstring">Upload Image</string>
+    <string name="usericondefaultstring">users</string>
 </resources>
