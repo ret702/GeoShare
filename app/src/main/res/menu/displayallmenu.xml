@@ -14,6 +14,11 @@
         android:icon="@drawable/usersicon"
         android:title="@string/usericondefaultstring"
         app:showAsAction="always"></item>
+    <item
+        android:id="@+id/icon_refresh"
+        android:icon="@drawable/refreshicon"
+        android:title="@string/usericondefaultstring"
+        app:showAsAction="always"></item>
 
 
 </menu>

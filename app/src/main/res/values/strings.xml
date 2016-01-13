@@ -2,4 +2,5 @@
     <string name="app_name">Geo Share</string>
     <string name="uploadimageicondefaultstring">Upload Image</string>
     <string name="usericondefaultstring">users</string>
+    <string name="refreshicondefaultstring">Refresh</string>
 </resources>

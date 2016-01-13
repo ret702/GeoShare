@@ -20,7 +20,7 @@
         android:label="Geo Share"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Main"></activity>
+        <activity android:name=".Main" />
         <activity
             android:name=".UploadImage"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -44,7 +44,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".displaySingleImage"></activity>
+        <activity android:name=".DisplayUser" />
+        <activity android:name=".DisplayUsers"></activity>
     </application>
 
 </manifest>

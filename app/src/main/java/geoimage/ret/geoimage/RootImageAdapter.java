@@ -113,7 +113,7 @@ class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ChildViewHolder> {
         childViewHolder.photoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, displaySingleImage.class);
+                Intent intent = new Intent(context, DisplayUser.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("url", urls.get(i).getParseFile("image").getUrl());
                 v.getContext().startActivity(intent);

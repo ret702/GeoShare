@@ -301,7 +301,7 @@ public class Main extends AppCompatActivity {
         if (item.getItemId() == R.id.icon_uploadimage) {
             startActivityForResult(new Intent(this, UploadImage.class), UploadImage.UploadImageRequestCode);
         } else if (item.getItemId() == R.id.icon_users) {
-            startActivity(new Intent(this, displaySingleImage.class));
+            startActivity(new Intent(this, DisplayUser.class));
         }
 
 
