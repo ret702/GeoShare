@@ -104,8 +104,7 @@ class ChildAdapter extends RecyclerView.Adapter<ChildAdapter.ChildViewHolder> {
     public void onBindViewHolder(ChildViewHolder childViewHolder, final int i) {
         Glide.with(_inflater.getContext()) //
                 .load(urls.get(i).getParseFile("image").getUrl())
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .placeholder(R.mipmap.ic_launcher)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(R.mipmap.ic_launcher)
                 .centerCrop()
                 .into(childViewHolder.photoImageView);

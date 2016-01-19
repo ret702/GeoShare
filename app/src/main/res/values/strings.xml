@@ -3,4 +3,5 @@
     <string name="uploadimageicondefaultstring">Upload Image</string>
     <string name="usericondefaultstring">users</string>
     <string name="refreshicondefaultstring">Refresh</string>
+    <string name="displayLocationdefaultstring">Display Location</string>
 </resources>

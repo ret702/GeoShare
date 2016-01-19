@@ -3,17 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="geoimage.ret.geoimage.DisplayUsers">
+    tools:context="geoimage.ret.geoimage.DisplayUsers"
+    android:id="@+id/display_all_users_layout">
+
+    <include
+        android:id="@+id/toolbar_displayUsers"
+        layout="@layout/toolbarlayout"></include>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewUsers"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar">
+        android:layout_below="@id/toolbar_displayUsers">
 
     </android.support.v7.widget.RecyclerView>
 

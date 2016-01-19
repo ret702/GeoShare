@@ -9,7 +9,7 @@ public class DisplayUser extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_alluser);
+        setContentView(R.layout.activity_display_user);
 
         Bundle bundle = getIntent().getExtras();
 

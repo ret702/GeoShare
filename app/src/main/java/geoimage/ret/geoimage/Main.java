@@ -34,8 +34,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Main extends AppCompatActivity {
-    static View rootview;
     Toolbar toolbar;
+    static View rootview;
     RecyclerView recyclerView;
     int start = 0;
     int end = 0;
@@ -291,19 +291,39 @@ public class Main extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.displayallmenu, menu);
+        getMenuInflater().inflate(R.menu.basemenu, menu);
         return super.onCreateOptionsMenu(menu);
 
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.icon_uploadimage) {
-            startActivityForResult(new Intent(this, UploadImage.class), UploadImage.UploadImageRequestCode);
-        } else if (item.getItemId() == R.id.icon_users) {
-            startActivity(new Intent(this, DisplayUser.class));
-        }
+        switch (item.getItemId()) {
+            case R.id.icon_uploadimage:
+                startActivityForResult(new Intent(this, UploadImage.class), UploadImage.UploadImageRequestCode);
+                break;
+            case R.id.icon_refresh:
+                //keep photos in current location discard rest, and get new photos
+                break;
+            case R.id.icon_users:
+                startActivity(new Intent(this, DisplayUsers.class));
+                break;
+            case R.id.icon_location:
+                if (App.getDisplayingSelf() == true) {
+                    //if displaying set to false and change icon
+                    App.setDisplayingSelf(false);
+                    item.setIcon(R.drawable.locationicon_off);
+                    makeSnack("Nearby users will no longer find you.");
+                } else {
+                    //if not display turn it on and change icon
+                    App.setDisplayingSelf(true);
+                    item.setIcon(R.drawable.locationicon_on);
+                    makeSnack("Nearby users can now find you.");
+                }
 
+                break;
+
+        }
 
         return true;
     }

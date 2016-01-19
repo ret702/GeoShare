@@ -15,6 +15,7 @@ public class App extends Application {
     static private Double longitude;
     static private List<ParseObject> imageIDs;
     static private boolean isCameraStarted;
+    static boolean locationStatus;
 
     static public Double getLat() {
 
@@ -54,8 +55,20 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "k9Jby5AwGmxHwr5seb9uF2JfU8WxWkbxk6ttGgVY", "RS5absrPZljMeuKueyCEZREBgfl56d0QerUVPakJ");
+        locationStatus = false;
+    }
 
+
+    static public boolean getDisplayingSelf() {
+
+        return locationStatus;
+    }
+
+
+    public static void setDisplayingSelf(boolean status) {
+        locationStatus = status;
     }
 }
